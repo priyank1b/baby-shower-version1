@@ -1,0 +1,103 @@
+@import "tailwindcss";
+
+/* Typography mappings for Celestial Theme */
+.font-playfair {
+  font-family: 'Playfair Display', serif;
+}
+
+.font-quicksand {
+  font-family: 'Quicksand', sans-serif;
+}
+
+.font-greatvibes {
+  font-family: 'Great Vibes', cursive;
+}
+
+.font-montserrat {
+  font-family: 'Montserrat', sans-serif;
+}
+
+/* Glowing text and gold effects */
+.text-celestial-gold {
+  background: linear-gradient(135deg, #fae8ff 0%, #fef08a 30%, #d97706 60%, #e9d5ff 100%);
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: shimmer 8s linear infinite;
+}
+
+.border-celestial-gold {
+  border-image: linear-gradient(to right, #6b21a8, #d97706, #fef08a, #d97706, #6b21a8) 1;
+}
+
+/* Animation keyframes */
+@keyframes shimmer {
+  0% {
+    background-position: 0% center;
+  }
+  100% {
+    background-position: 200% center;
+  }
+}
+
+/* Drifting clouds effect */
+.drift-cloud-left {
+  animation: driftLeft 40s linear infinite;
+}
+
+.drift-cloud-right {
+  animation: driftRight 50s linear infinite;
+}
+
+@keyframes driftLeft {
+  0% {
+    transform: translateX(-10%);
+  }
+  50% {
+    transform: translateX(10%);
+  }
+  100% {
+    transform: translateX(-10%);
+  }
+}
+
+@keyframes driftRight {
+  0% {
+    transform: translateX(10%);
+  }
+  50% {
+    transform: translateX(-10%);
+  }
+  100% {
+    transform: translateX(10%);
+  }
+}
+
+/* Custom Scrollbar for Invitation Card */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 4px;
+}
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: rgba(11, 10, 26, 0.5);
+}
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: #a855f7;
+  border-radius: 2px;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: #fbbf24;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  background-color: #0b0a1a;
+  overflow: hidden;
+  height: 100vh;
+  width: 100vw;
+}
+
+#root {
+  height: 100%;
+  width: 100%;
+}
