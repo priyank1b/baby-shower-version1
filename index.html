@@ -13,5 +13,43 @@
   <body class="bg-[#0b0a1a] text-slate-100 overflow-x-hidden selection:bg-purple-900 selection:text-amber-200">
     <div id="root"></div>
     <script type="module" src="/src/main.jsx"></script>
+    <script>
+      // Disable right-click context menu
+      document.addEventListener('contextmenu', (e) => e.preventDefault());
+
+      // Disable developer tools shortcuts
+      document.addEventListener('keydown', (e) => {
+        // F12
+        if (e.keyCode === 123) {
+          e.preventDefault();
+          return false;
+        }
+        // Ctrl+Shift+I / Cmd+Option+I (Inspect Element)
+        if ((e.ctrlKey || e.metaKey) && e.shiftKey && e.keyCode === 73) {
+          e.preventDefault();
+          return false;
+        }
+        // Ctrl+Shift+J / Cmd+Option+J (Console)
+        if ((e.ctrlKey || e.metaKey) && e.shiftKey && e.keyCode === 74) {
+          e.preventDefault();
+          return false;
+        }
+        // Ctrl+Shift+C / Cmd+Option+C (Inspect widget)
+        if ((e.ctrlKey || e.metaKey) && e.shiftKey && e.keyCode === 67) {
+          e.preventDefault();
+          return false;
+        }
+        // Ctrl+U / Cmd+Option+U (View Source)
+        if ((e.ctrlKey || e.metaKey) && e.keyCode === 85) {
+          e.preventDefault();
+          return false;
+        }
+        // Ctrl+S / Cmd+S (Save Page)
+        if ((e.ctrlKey || e.metaKey) && e.keyCode === 83) {
+          e.preventDefault();
+          return false;
+        }
+      });
+    </script>
   </body>
 </html>
