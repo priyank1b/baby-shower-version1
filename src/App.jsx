@@ -4,6 +4,7 @@ import CelestialBackground from "./components/CelestialBackground";
 import AudioPlayer from "./components/AudioPlayer";
 import CelestialGate from "./components/CelestialGate";
 import BabyInvitationCard from "./components/BabyInvitationCard";
+import Watermark from "./components/Watermark";
 
 function App() {
   const [isOpened, setIsOpened] = useState(false);
@@ -27,6 +28,9 @@ function App() {
 
   return (
     <div className="relative min-h-screen w-full bg-[#0b0a1a] flex items-center justify-center overflow-hidden">
+      {/* Brand watermarks & copy protection */}
+      <Watermark />
+
       {/* 1. Interactive star wish background */}
       <CelestialBackground wishes={wishes} />
 
