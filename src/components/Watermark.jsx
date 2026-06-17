@@ -21,7 +21,7 @@ export default function Watermark() {
 
     const overlayStyle = window.getComputedStyle(overlay);
     if (
-      overlayStyle.display !== 'block' && overlayStyle.display !== 'flex' && overlayStyle.display !== 'relative' ||
+      overlayStyle.display === 'none' ||
       overlayStyle.visibility === 'hidden' ||
       parseInt(overlayStyle.zIndex, 10) < 9999 ||
       overlayStyle.pointerEvents !== 'none' ||
@@ -73,7 +73,7 @@ export default function Watermark() {
       const brandText = textSpans[0].innerText || '';
       const demoText = textSpans[1].innerText || '';
 
-      if (!brandText.includes('NIVÔ STUDIO') || !demoText.includes('DEMO PREVIEW')) {
+      if (!brandText.toUpperCase().includes('NIVÔ') && !brandText.toUpperCase().includes('NIVO')) {
         console.warn(`Watermark security: brand text strings inside ${id} altered.`);
         return true;
       }
@@ -122,7 +122,7 @@ export default function Watermark() {
     }
 
     const badgeText = badge.innerText || '';
-    if (!badgeText.includes('PREVIEW BY') || !badgeText.includes('NIVÔ Studio')) {
+    if (!badgeText.toUpperCase().includes('PREVIEW') || (!badgeText.toUpperCase().includes('NIVÔ') && !badgeText.toUpperCase().includes('NIVO'))) {
       console.warn("Watermark security: badge text content altered.");
       return true;
     }
@@ -192,7 +192,7 @@ export default function Watermark() {
       if (checkTampering()) {
         triggerLock();
       }
-    }, 1000);
+    }, 1200);
     intervalRef.current = interval;
 
     return () => {
@@ -214,13 +214,13 @@ export default function Watermark() {
         flexDirection: 'column',
         alignItems: 'center',
         justifyContent: 'center',
-        opacity: 0.12, // More visible opacity to prevent screenshot editing
+        opacity: 0.12,
         textAlign: 'center',
         pointerEvents: 'none',
       }}
     >
       <img
-        src="/branding/logo.png"
+        src="./branding/logo.png"
         alt="NIVÔ Logo"
         style={{
           width: '120px',
@@ -228,9 +228,6 @@ export default function Watermark() {
           objectFit: 'contain',
           marginBottom: '10px',
           pointerEvents: 'none',
-        }}
-        onError={(e) => {
-          e.target.style.display = 'none';
         }}
       />
       <span
@@ -277,6 +274,7 @@ export default function Watermark() {
           bottom: 0,
           pointerEvents: 'none',
           zIndex: 9999,
+          display: 'flex',
           userSelect: 'none',
           WebkitUserSelect: 'none',
           msUserSelect: 'none',
@@ -306,12 +304,9 @@ export default function Watermark() {
         >
           <div className="relative w-6 h-6 rounded-full overflow-hidden border border-gold-400/20 bg-emerald-900 flex-shrink-0 flex items-center justify-center">
             <img
-              src="/branding/logo.png"
+              src="./branding/logo.png"
               alt="NIVÔ Logo"
               className="w-4 h-4 object-contain opacity-90 group-hover:scale-110 transition-transform duration-300"
-              onError={(e) => {
-                e.target.style.display = 'none';
-              }}
             />
           </div>
           
