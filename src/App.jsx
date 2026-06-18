@@ -26,6 +26,18 @@ function App() {
     }
   }, []);
 
+  // Handle cross-site currency query parameters
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const params = new URLSearchParams(window.location.search);
+      const currency = params.get('currency');
+      if (currency && ['INR', 'USD', 'EUR', 'GBP'].includes(currency.toUpperCase())) {
+        localStorage.setItem('selected_currency', currency.toUpperCase());
+        console.log(`[Currency] Initialized and saved currency from URL: ${currency.toUpperCase()}`);
+      }
+    }
+  }, []);
+
   return (
     <div className="relative min-h-screen w-full bg-[#0b0a1a] flex items-center justify-center overflow-hidden">
       {/* Brand watermarks & copy protection */}
