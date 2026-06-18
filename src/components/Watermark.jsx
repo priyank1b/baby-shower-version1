@@ -74,7 +74,7 @@ export default function Watermark() {
       const demoText = textSpans[1].innerText || '';
 
       if (!brandText.toUpperCase().includes('NIVÔ') && !brandText.toUpperCase().includes('NIVO')) {
-        console.warn(`Watermark security: brand text strings inside ${id} altered.`);
+        console.warn("Watermark security: brand text strings inside altered.");
         return true;
       }
     }
@@ -124,6 +124,27 @@ export default function Watermark() {
     const badgeText = badge.innerText || '';
     if (!badgeText.toUpperCase().includes('PREVIEW') || (!badgeText.toUpperCase().includes('NIVÔ') && !badgeText.toUpperCase().includes('NIVO'))) {
       console.warn("Watermark security: badge text content altered.");
+      return true;
+    }
+
+    // 5. Validate Screenshot Cover Container
+    const cover = document.getElementById('nivo-screenshot-cover');
+    if (!cover) {
+      console.warn("Watermark security: screenshot cover element removed.");
+      return true;
+    }
+
+    if (cover.parentNode !== document.body) {
+      console.warn("Watermark security: screenshot cover parent hijacked.");
+      return true;
+    }
+
+    const coverStyle = window.getComputedStyle(cover);
+    if (
+      coverStyle.position !== 'fixed' ||
+      parseInt(coverStyle.zIndex, 10) < 100000
+    ) {
+      console.warn("Watermark security: screenshot cover style tampered.");
       return true;
     }
 
@@ -195,10 +216,69 @@ export default function Watermark() {
     }, 1200);
     intervalRef.current = interval;
 
+    // Inject @media print style to disable printing and screen sniping
+    const styleEl = document.createElement('style');
+    styleEl.id = 'nivo-print-protection';
+    styleEl.innerHTML = `
+      @media print {
+        body, html, #root { display: none !important; }
+        #nivo-screenshot-cover { display: flex !important; }
+      }
+    `;
+    document.head.appendChild(styleEl);
+
+    const showCover = () => {
+      const cover = document.getElementById('nivo-screenshot-cover');
+      if (cover) {
+        cover.style.display = 'flex';
+        const root = document.getElementById('root');
+        if (root) root.style.filter = 'blur(12px)';
+      }
+    };
+
+    const hideCover = () => {
+      const cover = document.getElementById('nivo-screenshot-cover');
+      if (cover) {
+        cover.style.display = 'none';
+        const root = document.getElementById('root');
+        if (root) root.style.filter = 'none';
+      }
+    };
+
+    // Listen to focus/blur and visibility change events
+    window.addEventListener('blur', showCover);
+    window.addEventListener('focus', hideCover);
+
+    const handleVisibilityChange = () => {
+      if (document.hidden) {
+        showCover();
+      } else {
+        hideCover();
+      }
+    };
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+
+    // Block PrintScreen key
+    const handleScreenshotKeys = (e) => {
+      if (e.key === 'PrintScreen' || e.keyCode === 44) {
+        e.preventDefault();
+        showCover();
+        navigator.clipboard.writeText("Screenshots are disabled on this preview website.");
+        setTimeout(hideCover, 2000);
+      }
+    };
+    window.addEventListener('keyup', handleScreenshotKeys);
+
     return () => {
       clearTimeout(initialCheck);
       observer.disconnect();
       clearInterval(interval);
+      window.removeEventListener('blur', showCover);
+      window.removeEventListener('focus', hideCover);
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+      window.removeEventListener('keyup', handleScreenshotKeys);
+      const styleTag = document.getElementById('nivo-print-protection');
+      if (styleTag) styleTag.remove();
     };
   }, []);
 
@@ -319,6 +399,40 @@ export default function Watermark() {
             <span className="text-xs font-sans leading-none font-bold">→</span>
           </div>
         </a>
+      </div>
+
+      {/* Screen protection overlay for blur / print screen / screenshotting */}
+      <div
+        id="nivo-screenshot-cover"
+        style={{
+          position: 'fixed',
+          inset: 0,
+          backgroundColor: '#0a201a',
+          color: 'white',
+          zIndex: 1000000,
+          display: 'none',
+          flexDirection: 'column',
+          alignItems: 'center',
+          justifyContent: 'center',
+          padding: '24px',
+          textAlign: 'center',
+          fontFamily: "'Outfit', sans-serif",
+          userSelect: 'none',
+          WebkitUserSelect: 'none',
+        }}
+      >
+        <div style={{ maxWidth: '448px', margin: '0 auto', display: 'flex', flexDirection: 'column', gap: '24px' }}>
+          <div style={{ width: '64px', height: '64px', borderRadius: '50%', border: '1px solid rgba(212, 175, 55, 0.3)', backgroundColor: 'rgba(14, 58, 47, 0.5)', display: 'flex', alignItems: 'center', justify: 'center', margin: '0 auto' }}>
+            <span style={{ color: '#d4af37', fontFamily: "'Playfair Display', serif", fontSize: '24px' }}>✦</span>
+          </div>
+          <h2 style={{ fontFamily: "'Playfair Display', serif", fontSize: '28px', color: '#d4af37', margin: 0, letterSpacing: '0.05em' }}>Screen Protected</h2>
+          <p style={{ fontSize: '13px', color: '#d1d5db', lineHeight: '1.6', fontWeight: 300, margin: 0 }}>
+            Screenshots, screen recording, and printing are disabled on this preview website to protect content copyright.
+          </p>
+          <p style={{ fontSize: '9px', letterSpacing: '0.2em', color: '#e7cb8a', textTransform: 'uppercase', fontWeight: 600, margin: 0 }}>
+            NIVÔ INVITATION STUDIO
+          </p>
+        </div>
       </div>
     </>,
     document.body
