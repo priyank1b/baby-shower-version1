@@ -115,6 +115,23 @@ function BabyInvitationCard({ onWishAdded }) {
 
     setIsSubmitting(true);
 
+    const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:8080';
+    const invitationSlug = import.meta.env.VITE_INVITATION_SLUG || 'birthday-invitation-v2';
+
+    const payload = {
+      name: rsvpName,
+      attending: rsvpAttending === 'yes',
+      guestCount: rsvpAttending === 'yes' ? parseInt(rsvpGuests || '1', 10) : 0,
+      mealPreference: rsvpDrink,
+      message: rsvpNotes
+    };
+
+    fetch(`${apiUrl}/api/public/invitations/${invitationSlug}/rsvp`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    }).catch(err => console.warn('API submission offline:', err));
+
     setTimeout(() => {
       const newRsvp = {
         id: Date.now(),
