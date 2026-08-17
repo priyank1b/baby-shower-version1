@@ -115,8 +115,21 @@ function BabyInvitationCard({ onWishAdded }) {
 
     setIsSubmitting(true);
 
-    const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:8080';
-    const invitationSlug = import.meta.env.VITE_INVITATION_SLUG || 'birthday-invitation-v2';
+    const getAutoSlug = () => {
+      if (typeof window !== 'undefined') {
+        const host = window.location.hostname;
+        const sub = host.split('.')[0];
+        if (sub && !['localhost', '127', 'www', 'templates', 'app'].includes(sub.toLowerCase())) {
+          return sub;
+        }
+        const params = new URLSearchParams(window.location.search);
+        if (params.has('slug')) return params.get('slug');
+      }
+      return import.meta.env.VITE_INVITATION_SLUG || 'birthday-invitation-v2';
+    };
+
+    const apiUrl = import.meta.env.VITE_API_URL || 'https://api.nivoinvites.com';
+    const invitationSlug = getAutoSlug();
 
     const payload = {
       name: rsvpName,
