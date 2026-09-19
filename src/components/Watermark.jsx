@@ -2,84 +2,11 @@ import React, { useEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
 
 export default function Watermark() {
-  const containerRef = useRef(null);
   const observerRef = useRef(null);
   const intervalRef = useRef(null);
 
   const checkTampering = () => {
-    // 1. Validate Outer Full-Screen Overlay Container
-    const overlay = document.getElementById('nivo-watermark-overlay');
-    if (!overlay) {
-      console.warn("Watermark security: overlay container removed.");
-      return true; 
-    }
-
-    if (overlay.parentNode !== document.body) {
-      console.warn("Watermark security: overlay parent node hijacked.");
-      return true;
-    }
-
-    const overlayStyle = window.getComputedStyle(overlay);
-    if (
-      overlayStyle.display === 'none' ||
-      overlayStyle.visibility === 'hidden' ||
-      parseInt(overlayStyle.zIndex, 10) < 9999 ||
-      overlayStyle.pointerEvents !== 'none' ||
-      overlayStyle.position !== 'fixed'
-    ) {
-      console.warn("Watermark security: overlay container style tampering detected.");
-      return true; 
-    }
-
-    // 2. Validate all 3 Scattered Watermark Contents
-    const contentIds = ['nivo-watermark-content-1', 'nivo-watermark-content-2', 'nivo-watermark-content-3'];
-    for (const id of contentIds) {
-      const content = document.getElementById(id);
-      if (!content) {
-        console.warn(`Watermark security: content element ${id} removed.`);
-        return true;
-      }
-
-      const contentStyle = window.getComputedStyle(content);
-      if (
-        contentStyle.display === 'none' ||
-        contentStyle.visibility === 'hidden' ||
-        parseFloat(contentStyle.opacity) < 0.01
-      ) {
-        console.warn(`Watermark security: content visual style of ${id} altered.`);
-        return true;
-      }
-
-      // Validate nested image inside each watermark content
-      const logoImg = content.querySelector('img');
-      if (!logoImg) {
-        console.warn(`Watermark security: brand logo image inside ${id} removed.`);
-        return true;
-      }
-
-      const logoStyle = window.getComputedStyle(logoImg);
-      if (logoStyle.display === 'none' || logoStyle.visibility === 'hidden' || parseFloat(logoStyle.opacity) < 0.01) {
-        console.warn(`Watermark security: brand logo image inside ${id} hidden.`);
-        return true;
-      }
-
-      // Validate brand/demo texts inside each watermark content
-      const textSpans = content.querySelectorAll('span');
-      if (textSpans.length < 2) {
-        console.warn(`Watermark security: brand description texts inside ${id} removed.`);
-        return true;
-      }
-
-      const brandText = textSpans[0].innerText || '';
-      const demoText = textSpans[1].innerText || '';
-
-      if (!brandText.toUpperCase().includes('NIVÔ') && !brandText.toUpperCase().includes('NIVO')) {
-        console.warn("Watermark security: brand text strings inside altered.");
-        return true;
-      }
-    }
-
-    // 3. Validate Floating Badge Container (at bottom-left)
+    // 1. Validate Floating Badge Container (at bottom-left)
     const badge = document.getElementById('nivo-watermark-badge');
     if (!badge) {
       console.warn("Watermark security: badge element removed.");
@@ -282,88 +209,8 @@ export default function Watermark() {
     };
   }, []);
 
-  const renderWatermarkElement = (id, top, left) => (
-    <div
-      id={id}
-      style={{
-        position: 'absolute',
-        top: top,
-        left: left,
-        transform: 'translate(-50%, -50%) rotate(-20deg)',
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        justifyContent: 'center',
-        opacity: 0.12,
-        textAlign: 'center',
-        pointerEvents: 'none',
-      }}
-    >
-      <img
-        src="/branding/logo.png"
-        alt="NIVÔ Logo"
-        style={{
-          width: '120px',
-          height: '120px',
-          objectFit: 'contain',
-          marginBottom: '10px',
-          pointerEvents: 'none',
-        }}
-      />
-      <span
-        style={{
-          fontFamily: "'Playfair Display', serif",
-          fontSize: '28px',
-          fontWeight: '700',
-          color: '#c68a33',
-          letterSpacing: '4px',
-          lineHeight: 1.1,
-          textTransform: 'uppercase',
-          pointerEvents: 'none',
-        }}
-      >
-        NIVÔ STUDIO
-      </span>
-      <span
-        style={{
-          fontFamily: "'Outfit', sans-serif",
-          fontSize: '11px',
-          fontWeight: '600',
-          color: '#c68a33',
-          letterSpacing: '6px',
-          marginTop: '6px',
-          textTransform: 'uppercase',
-          pointerEvents: 'none',
-        }}
-      >
-        DEMO PREVIEW
-      </span>
-    </div>
-  );
-
   return createPortal(
     <>
-      <div
-        ref={containerRef}
-        id="nivo-watermark-overlay"
-        style={{
-          position: 'fixed',
-          top: 0,
-          left: 0,
-          right: 0,
-          bottom: 0,
-          pointerEvents: 'none',
-          zIndex: 9999,
-          display: 'flex',
-          userSelect: 'none',
-          WebkitUserSelect: 'none',
-          msUserSelect: 'none',
-        }}
-      >
-        {renderWatermarkElement('nivo-watermark-content-1', '25%', '25%')}
-        {renderWatermarkElement('nivo-watermark-content-2', '50%', '50%')}
-        {renderWatermarkElement('nivo-watermark-content-3', '75%', '75%')}
-      </div>
 
       <div
         id="nivo-watermark-badge"
